@@ -161,5 +161,17 @@ def build_Z(actions, states):
     return Z
 
 
-def empirical_bellman(a, s, ns, r, action_space, gamma):
-    ret
+def Qapprox(a, s, theta):
+    phi = np.array([a, a * s, a ** 2 + s ** 2])
+    return np.dot(phi, theta)
+
+
+def empirical_bellman(ns, r, theta, action_space, gamma):
+    Qvec = np.array([Qapprox(aprime, ns, theta) for aprime in action_space])
+    return r + gamma * np.max(Qvec)
+
+
+def build_y(rewards, next_states, theta, action_space, gamma):
+    T = next_states.shape[0]
+    y = [empirical_bellman(next_states[t], rewards[t], theta, action_space, gamma) for t in range(0, T)]
+    return y
